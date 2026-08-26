@@ -381,7 +381,30 @@
   function toggleFlip(){ flipCard.classList.toggle('flipped'); }
   flipCard.addEventListener('click', toggleFlip);
   flipCard.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleFlip(); }
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleFlip(); }
+});
+
+// --- Boutique : récupère le catalogue depuis VERIF AI backend et l'affiche ---
+const CATALOG_API = 'https://verifai-8ud0.onrender.com/api/catalog';
+fetch(CATALOG_API)
+  .then(r => r.json())
+  .then(items => {
+    const el = document.getElementById('boutique-list');
+    if(!items.length){
+      el.innerHTML = '<div class="cat-card"><p>Le catalogue arrive bientôt — repasse par ici !</p></div>';
+      return;
+    }
+    el.innerHTML = items.map(it => `
+      <div class="cat-card">
+        <div class="cat-stamp">${it.emoji || '🃏'}</div>
+        <h3>${it.name}</h3>
+        <p>${it.description || ''}</p>
+        <div class="cat-meta"><span>${it.price}</span>${it.category ? `<span>·</span><span>${it.category}</span>` : ''}</div>
+      </div>
+    `).join('');
+  })
+  .catch(() => {
+    document.getElementById('boutique-list').innerHTML = '<div class="cat-card"><p>Catalogue momentanément indisponible.</p></div>';
   });
 </script>
 
